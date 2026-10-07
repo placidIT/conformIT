@@ -5,7 +5,21 @@ have been applied to a real project and the process has settled. Per
 [documentation-standard.md](documentation-standard.md), `STATE.md` is the
 one document with an expiry.
 
-**Last updated:** 2026-08-28. Tenth session: added a `chats/` session-log
+**Last updated:** 2026-10-06. Eleventh session: the maintainer moved
+conformIT, Consigliere and its fleet template from the `almadon` account
+to the `SerenIT-org` organization. Updated every live reference (README,
+`registry/targets.yaml`, both workflows, the adopter template) and left
+the older entries in this file and in `docs/decisions.md` as they were,
+since they record what was true when written. The private reporting repo
+was not part of the move: `almadon/conformIT-reporting` still holds real
+findings, so it was left alone, and a clean public template plus an
+org-owned private copy were created instead (decision #21). Not done and
+not doable from here: a new fine-grained token for the new reporting
+repo. Until the maintainer replaces the `CONFORMIT_REPORTING_TOKEN` secret
+with one scoped to `SerenIT-org/conformIT-reporting`, the publish step
+will fail.
+
+Tenth session (2026-08-28): added a `chats/` session-log
 convention (decision #20) and a modularity/portability design principle
 (decision #19, `design-principles.md` rule 11), both maintainer-
 proposed. Gave conformIT its own root `.gitignore` for the first time
@@ -169,7 +183,7 @@ categories already drafted. See "gaps against that scope" below.
   difference (dispatch and schedule are different trigger paths in
   GitHub Actions) but not one there's reason to expect behaves any
   differently. See decision #12.
-- **`almadon/conformIT-reporting` (private) exists and is live**: the
+- **`almadon/conformIT-reporting` (private) existed and was live** until the move to `SerenIT-org` (decision #21 has the replacement): the
   maintainer added `CONFORMIT_REPORTING_TOKEN` the same day it was
   requested, and the first real publish run succeeded, six report files
   plus a regenerated README index, using the real `gitleaks` engine in

@@ -979,3 +979,53 @@ present-and-committed) run earlier the same session.
 convention turning out to be incompatible with landing inside
 `chats/{tool}/` as plain markdown, in which case the format
 requirement, not the directory shape, would need to bend.
+
+## 21. Moved to SerenIT-org, and the reporting repo became a template plus an org-owned copy
+
+The maintainer moved conformIT, Consigliere and its fleet template from
+the `almadon` account to the `SerenIT-org` organization (2026-10-06), and
+renamed the default branch of the moved repos to `main`. conformIT's own
+audit workflow and its adopter template both name repositories, so the
+move touches CI directly, not just prose.
+
+**Chosen:** every live reference now points at `SerenIT-org`:
+`README.md`, `registry/targets.yaml` (`SerenIT-org/conformIT` and
+`SerenIT-org/Consigliere`; the `almadon/novak*` targets did not move and
+are unchanged), `.github/workflows/audit.yml`, the comments in
+`reusable-audit.yml`, and `templates/.github/workflows/conform-audit.yml`
+(whose `uses:` line is the one adopters copy). Earlier entries in this
+file keep `almadon/...` on purpose: they record what was true when they
+were written.
+
+**The reporting repo:** the maintainer's recollection was that it should
+be a public template other adopters copy into private repos. It was not
+an automated step: the reusable workflow has always required the caller
+to create it by hand (it says so in its own input description), and
+`almadon/conformIT-reporting` holds real findings, so making that repo
+public, or turning it into the template, would defeat decision #16. So
+instead: `SerenIT-org/conformIT-reporting-template` is a new public
+template repo with nothing but a README explaining the setup, an MIT
+licence matching conformIT's, and an empty `reports/`; and
+`SerenIT-org/conformIT-reporting` is a private repo created from it for
+this org's own audit. `almadon/conformIT-reporting` is untouched.
+
+**What it cost:** one manual step this change cannot do. The fine-grained
+token in `CONFORMIT_REPORTING_TOKEN` was scoped to the old reporting repo,
+and a token's scope does not follow a repo to a new owner. A new token,
+scoped to `SerenIT-org/conformIT-reporting` only with `Contents: Read and
+write`, has to replace it (and the organization has to allow fine-grained
+tokens), or the publish step fails. Also: callers pinned to
+`almadon/conformIT/.github/workflows/reusable-audit.yml@v4` depend on
+GitHub redirecting `uses:` references after a transfer, which I did not
+verify and would not rely on. A search of the `almadon`, `SerenIT-org`
+and `tmeuze` accounts found no such callers other than conformIT itself.
+`VERIFY`: the redirect behaviour for `uses:` after a transfer.
+
+**Rejected:** leaving `reporting_repo` pointing at the old private repo
+(a cross-organization write with a token that outlives the account it was
+scoped for) and transferring that repo as is (it carries the old
+findings history into the new org).
+
+**What would justify revisiting:** if reports from several orgs ever need
+one shared destination, the per-org private repo split is the thing to
+reconsider; nothing suggests that yet.

@@ -3,7 +3,7 @@ name: conformIT audit
 # conformIT's own use of its own reusable workflow
 # (reusable-audit.yml), auditing conformIT's own registry/targets.yaml
 # against conformIT's own private reporting repo. This file is
-# deliberately thin: everything that isn't almadon-specific lives in
+# deliberately thin: everything that isn't specific to this org lives in
 # reusable-audit.yml instead, so any other org can call the same logic
 # with their own targets and their own reporting repo. See
 # docs/decisions.md #17.
@@ -27,6 +27,6 @@ jobs:
   audit:
     uses: ./.github/workflows/reusable-audit.yml
     with:
-      reporting_repo: almadon/conformIT-reporting
+      reporting_repo: SerenIT-org/conformIT-reporting
     secrets:
       reporting_token: ${{ secrets.CONFORMIT_REPORTING_TOKEN }}
