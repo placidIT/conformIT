@@ -5,7 +5,32 @@ have been applied to a real project and the process has settled. Per
 [documentation-standard.md](documentation-standard.md), `STATE.md` is the
 one document with an expiry.
 
-**Last updated:** 2026-10-06. Eleventh session: the maintainer moved
+**Last updated:** 2026-10-07 (later). Thirteenth session: conformIT is now
+`placidIT/conformIT`; `SerenIT-org` was renamed and Consigliere went back to
+`almadon/Consigliere` as a separate project (decision #22). Every live
+reference, the local remote and the flashDK fix were repointed, after
+checking the placidIT repos and tags exist. The older notes below that name
+`SerenIT-org` are history, not instructions. What this changes for the
+maintainer: `CONFORMIT_REPORTING_TOKEN` must be scoped to
+`placidIT/conformIT-reporting`, not the `SerenIT-org` repo the Eleventh
+session note below asks for.
+
+Twelfth session (2026-10-07, earlier): checked the one deployed
+external caller, `flashctrl/flashDK`, after the move. Three separate
+problems, only one of them the move (decision #21 addendum). Its
+`uses:` still named `almadon/conformIT`, which GitHub does **not**
+redirect for reusable workflows (verified, not assumed), so `main` could
+not even parse; a fix is open as
+[flashDK#16](https://github.com/flashctrl/flashDK/pull/16), run against
+its branch and green through the audit step. Its pin was also still
+`@v1`, because the v2/v3/v4 bumps I reported earlier were pushed to a
+branch that had already merged and never reached `main`. And its
+scheduled publish has been failing since 2026-09-28 with
+`Authentication failed` on the reporting token, which predates the move
+and needs a new token from the maintainer. Unmerged, and unfixed until
+that token is replaced.
+
+Eleventh session (2026-10-06): the maintainer moved
 conformIT, Consigliere and its fleet template from the `almadon` account
 to the `SerenIT-org` organization. Updated every live reference (README,
 `registry/targets.yaml`, both workflows, the adopter template) and left
@@ -158,17 +183,19 @@ categories already drafted. See "gaps against that scope" below.
   never been run.** Checked for YAML validity and correct, verified
   action pins (`actions/checkout` v7.0.1, `codeql-action` v4's actual
   commit); not tested against a real repository.
-- **`flashctrl/flashDK`'s cross-org caller PR is open, not merged or
-  triggered yet** ([PR #11](https://github.com/flashctrl/flashDK/pull/11),
-  now pinned to `v2`). The reporting repo
-  (`flashctrl/flashDK-reporting`) exists and has its initial commit; the
-  actual publish run through the reusable workflow, as a genuine
-  external caller rather than conformIT's own self-call, hasn't
-  happened yet. GitHub Actions only makes a workflow dispatchable once
-  it's on the repo's default branch, so this specifically needs the PR
-  merged (or `workflow_dispatch` targeted at the branch once GitHub
-  picks it up) before it can be triggered and watched the way every
-  other feature here has been.
+- **`flashctrl/flashDK` is the one known external caller, and it is
+  currently broken twice over.** PR #11 merged on 2026-08-28 and ran
+  successfully on schedule four times (Aug 31 to Sep 21), each publishing
+  to `flashctrl/flashDK-reporting`. Since then: (1) the publish step has
+  failed with `Authentication failed` since 2026-09-28, a token problem
+  that predates the move; (2) the move left `uses: almadon/conformIT/...`
+  unresolvable. A third scheduled run, 2026-10-05, failed for a GitHub-side
+  reason (the hosted runner was never acquired) and tells us nothing.
+  [flashDK#16](https://github.com/flashctrl/flashDK/pull/16) fixes (2)
+  and the stale `@v1` pin; (1) needs a new `CONFORM_REPORTING_TOKEN`.
+  This list of deployed callers exists only here and in whatever someone
+  remembers; nothing in this repo inventories them, which is how
+  decision #21's search missed this one.
 - **`scripts/conform.sh audit` exists and works.** `init` still doesn't;
   running it prints a message pointing here instead of silently doing
   nothing. Audit supports a local path, an `owner/repo` shorthand, and

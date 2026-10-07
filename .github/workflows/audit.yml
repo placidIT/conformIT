@@ -27,6 +27,6 @@ jobs:
   audit:
     uses: ./.github/workflows/reusable-audit.yml
     with:
-      reporting_repo: SerenIT-org/conformIT-reporting
+      reporting_repo: placidIT/conformIT-reporting
     secrets:
       reporting_token: ${{ secrets.CONFORMIT_REPORTING_TOKEN }}

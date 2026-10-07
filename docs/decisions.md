@@ -1029,3 +1029,132 @@ findings history into the new org).
 **What would justify revisiting:** if reports from several orgs ever need
 one shared destination, the per-org private repo split is the thing to
 reconsider; nothing suggests that yet.
+
+### Addendum (2026-10-07): the move broke the one deployed caller, and the search that said it wouldn't was incomplete
+
+Checking `flashctrl/flashDK`, the only caller of conformIT outside this
+repo, found that the section above was wrong in three ways.
+
+**The caller search missed it.** It covered `almadon`, `SerenIT-org` and
+`tmeuze`, not `flashctrl`, the org flashDK lives in. The reason is
+structural: nothing in this repo lists who calls the reusable workflow, so
+"search the accounts I remember" was the only method available, and it
+only finds what it remembers to look in. The sweep repeated this time
+covered all four accounts and found exactly one external caller. It is
+still a search of the accounts reachable from here, not an inventory. The
+known callers are now listed in `STATE.md`, which is a note rather than a
+fix.
+
+**The `VERIFY` is resolved: GitHub does not redirect `uses:` after a
+transfer.** `gh repo view almadon/conformIT` returns the new location, and
+`v1` through `v4` all exist at `SerenIT-org/conformIT` with `v4` still
+pointing at the commit it did before the transfer. Dispatching flashDK's
+workflow with `uses: almadon/conformIT/.github/workflows/reusable-audit.yml@v1`
+nonetheless fails to parse: `workflow was not found`. The repository URL
+redirects; the Actions `uses:` resolution does not. Any caller of a
+transferred reusable workflow has to be edited, and until it is, it fails
+at parse time rather than degrading. flashDK's next scheduled run
+(2026-10-12) would have failed before running anything.
+
+**The earlier claim that flashDK's pin was kept current was wrong.** The
+v3 and v4 addenda say flashDK's PR was bumped. The bumps were pushed to the
+feature branch of PR #11 after that PR had merged (2026-08-28 17:22 UTC,
+before the first bump), so they never reached `main`. flashDK's `main` has
+been on `@v1` throughout: no semgrep check, no fork-portability fix, no
+`chats/` check. Nobody noticed because the pinned version kept working.
+The lesson in decision #17's addendum, that a pin silently withholds
+additions, applied to the one caller that was supposed to be proof it
+had been handled. What went wrong is mundane and checkable: "I pushed a
+commit to the PR's branch" is not "the change is on `main`", and I
+reported the first as the second.
+
+**Unrelated to the move, found while diagnosing it:** flashDK's scheduled
+publish has failed since 2026-09-28 with
+`fatal: Authentication failed for 'https://github.com/flashctrl/flashDK-reporting.git/'`
+and `Invalid username or token`. The last good publish was 2026-09-21,
+roughly a month after the token was created. That wording (as opposed to a
+403 permission error) means GitHub does not recognise the token at all:
+expired or revoked, not mis-scoped. Expiry is the likely cause but is an
+inference; the token's own metadata is not visible from here. The run on
+2026-10-05 failed separately, because GitHub never acquired a hosted
+runner for the job (an infrastructure fault, nothing to fix). Two weeks of
+failed scheduled runs went unactioned, so failing loudly by itself did not
+get anyone to look.
+
+**What was done:** [flashDK#16](https://github.com/flashctrl/flashDK/pull/16)
+changes the `uses:` owner to `SerenIT-org` and the pin to `@v4`, one line.
+Dispatched against its branch before merging: checkout of the reusable
+workflow, both tool installs, and the audit step all succeeded; the publish
+step failed with the same authentication error, which isolates the token as
+the only remaining fault. Not merged: it changes the default branch of a
+public repository, so it waits for the maintainer.
+
+**What it cost, and the open item:** the same token lifetime applies to
+`CONFORMIT_REPORTING_TOKEN` for `SerenIT-org/conformIT-reporting`, which
+was just created. Fine-grained tokens expire, and a workflow that fails
+loudly every week is easy to stop looking at. Choosing the expiry
+deliberately, and writing the renewal date somewhere that gets read, is
+the mitigation available; the adopter template does not currently say so.
+
+**What would justify revisiting:** a second external caller appearing,
+which would make a real inventory (a file in this repo, rather than a
+paragraph in `STATE.md`) worth building.
+
+## 22. Moved again, to placidIT, and Consigliere is no longer part of the same move
+
+One day after decision #21, `SerenIT-org` was renamed `placidIT`, and
+conformIT now lives at `placidIT/conformIT`. Separately, the maintainer's
+position (relayed by another Claude session working for them, not typed
+into this one) is that conformIT and the placidIT suite are different
+projects with different goals from Consigliere, which now lives at
+`almadon/Consigliere`. Decision #21 had described Consigliere as having
+moved together with conformIT; that stopped being true.
+
+**Chosen:** every live reference now names `placidIT`: `README.md`, both
+workflows (including the `uses:` owner in the adopter template),
+`templates/.github/workflows/conform-audit.yml`'s `--template` hint, and
+`registry/targets.yaml`. The one exception is the Consigliere target,
+which becomes `almadon/Consigliere` rather than `placidIT/Consigliere`,
+since it is not part of this org. The local `GitHub` remote is now
+`git@github.com:placidIT/conformIT.git`. Decisions #21 and its addendum are
+left as written, because they record what was true when they were written.
+
+**Checked before pointing at anything**, rather than taken on the message's
+word: `placidIT/conformIT` (public), `placidIT/conformIT-reporting`
+(private), `placidIT/conformIT-reporting-template` (public, flagged as a
+template) and `almadon/Consigliere` all exist. `v1` through `v4` are present
+at `placidIT/conformIT`, `v4` still points at commit `9537f41`, and `main`
+there is the same commit as this checkout's `HEAD`. `SerenIT-org/conformIT`
+still resolves in the API, but only as a redirect to the new location.
+
+**The lesson from #21's addendum applies a second time, to a caller that
+already exists.** A `uses:` reference to a reusable workflow does not
+follow a repository redirect, so any caller written against
+`SerenIT-org/conformIT` breaks exactly as the one written against
+`almadon/conformIT` did. `flashctrl/flashDK`'s open fix
+([flashDK#16](https://github.com/flashctrl/flashDK/pull/16)) was repointed
+from `SerenIT-org` to `placidIT` before it merged, and a run dispatched
+from its branch resolved `placidIT/conformIT@v4` and passed through the
+audit step. It still fails at publish on the expired-token fault described
+in #21's addendum, which this does not touch. The two renames in two days
+are also the argument for the inventory #21's addendum called a note
+rather than a fix: the next move will be caught by whoever remembers to
+look, unless callers are recorded somewhere checkable.
+
+**What it cost, and what changes in the manual step:** the token in
+`CONFORMIT_REPORTING_TOKEN` has to be scoped to
+`placidIT/conformIT-reporting`, not `SerenIT-org/conformIT-reporting` as
+#21 said, and the `placidIT` organization must allow fine-grained tokens.
+Nothing here can create or install it. The reporting repos the audit
+published to under `almadon` and `SerenIT-org` are not touched.
+
+**What I could not verify:** that conformIT and Consigliere have different
+goals, or the reasons for the rename. Both come from the relayed message
+and nothing in this repository confirms or contradicts them; they affect
+only which owner Consigliere's audit target names. I also did not check
+whether the `SerenIT-org` reporting repos redirect to their `placidIT`
+equivalents, because nothing now points at them.
+
+**What would justify revisiting:** another move, in which case the cost
+is again every pinned `uses:` line, and the inventory becomes worth
+building instead of describing.

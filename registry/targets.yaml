@@ -15,9 +15,9 @@
 # knows how to read correctly.
 
 targets:
-  - SerenIT-org/conformIT
+  - placidIT/conformIT
   - almadon/novak
   - almadon/novak-integracije
   - almadon/novak-konzol
-  - SerenIT-org/Consigliere
+  - almadon/Consigliere
   - flashctrl/flashDK

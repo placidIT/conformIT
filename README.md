@@ -102,7 +102,7 @@ Picking wrong doesn't break anything, but it does mean redoing setup
 work later, so it's worth reading both before choosing.
 
 **Reference conformIT directly** (`uses:
-SerenIT-org/conformIT/.github/workflows/reusable-audit.yml@v4` in your own
+placidIT/conformIT/.github/workflows/reusable-audit.yml@v4` in your own
 workflow, per [`templates/.github/workflows/conform-audit.yml`](templates/.github/workflows/conform-audit.yml)):
 you get the standards as conformIT defines them, unmodified, and the
 audit tooling stays current with zero effort on your part beyond
@@ -121,7 +121,7 @@ blank page.
 | **Adding your own checks** | Not possible from the caller side | Edit `scripts/lib/audit-checks.sh` directly |
 | **Staying current costs** | One line (the pinned ref) to review per bump | Ongoing: every upstream change is a merge you have to evaluate |
 | **Divergence is** | Impossible by construction | Your responsibility to record, the way decision #1 records anjunatree's rejected slug format instead of pretending it didn't happen |
-| **Setup effort** | A three-line caller workflow, a reporting repo (made from [`SerenIT-org/conformIT-reporting-template`](https://github.com/SerenIT-org/conformIT-reporting-template)), a scoped PAT | The same, plus you now maintain a second copy of everything conformIT maintains |
+| **Setup effort** | A three-line caller workflow, a reporting repo (made from [`placidIT/conformIT-reporting-template`](https://github.com/placidIT/conformIT-reporting-template)), a scoped PAT | The same, plus you now maintain a second copy of everything conformIT maintains |
 | **Right for** | "I want these standards applied to my repos" | "I want to start from these standards and make them mine" |
 
 **The failure mode on each side, stated plainly:**
@@ -158,7 +158,7 @@ Output is split by audience, not just posted in one place. The job
 summary in this repo's Actions tab (public, since this repo is public)
 carries pass/warn/fail/crit counts only. The full per-finding detail,
 including file:line samples for anything the sensitive-content checks
-below flag, goes to `SerenIT-org/conformIT-reporting` (private), one file per
+below flag, goes to `placidIT/conformIT-reporting` (private), one file per
 target, overwritten each run so its git history is the trend record. See
 decision [#16](docs/decisions.md).
 
